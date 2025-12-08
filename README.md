@@ -202,19 +202,51 @@ CREATE TABLE Prescriptions (
   ReminderTime DATE
 );
 
-Phase VI: PL/SQL Development 🛠️
+INSERT INTO Patients VALUES (1, 'John Doe', '0788000000', 34, 'Male');
+INSERT INTO Doctors VALUES (1, 'Dr. Alice Mukamana', 'Pediatrics');
+INSERT INTO Medicines VALUES (1, 'Amoxicillin', 'Antibiotic');
+INSERT INTO Prescriptions VALUES
+(1, 1, 1, 1, '500mg', 3, SYSDATE + 1/24);
 
-This phase focuses on creating PL/SQL objects (functions, procedures, and packages) to implement application logic on top of the existing database tables (Patients, Doctors, Medicines, Prescriptions).
 
-Object Name	Type	Purpose
-PK_MEDICATION_MANAGER	Package	Groups related PL/SQL functionality (such as FN_GET_DOCTOR_NAME, SP_LOG_MISSED_DOSE, SP_DOCTOR_SUMMARY_REPORT) for efficient compilation and code organization.
-FN_GET_DOCTOR_NAME	Function	Returns the full name of a doctor based on DoctorID. Helps in reporting and display purposes.
-SP_LOG_MISSED_DOSE	Procedure	Handles inserting records into a table for patients who missed a dose. Ensures proper transaction handling.
-SP_DOCTOR_SUMMARY_REPORT	Procedure (Reporting)	Generates a summary report of prescriptions handled by a specific doctor. Uses explicit cursors and joins across multiple tables.
-Key Notes
 
-This phase does not modify the table structure; it adds PL/SQL logic on top of the existing schema.
+## Phase VI: PL/SQL Development 🛠️
 
-All objects are encapsulated in the package PK_MEDICATION_MANAGER for modular and maintainable code.
+This phase adds PL/SQL logic on top of the existing database tables  
+(Patients, Doctors, Medicines, Prescriptions).  
+All objects are stored inside the package **PK_MEDICATION_MANAGER** for clean and modular code.
 
-Reporting and logging are separated from the core database tables for better clarity and debugging.
+---
+
+### 📋 PL/SQL Objects Summary
+
+| Object Name              | Type        | Purpose |
+|--------------------------|-------------|---------|
+| PK_MEDICATION_MANAGER    | Package     | Groups all PL/SQL logic for medication management. |
+| FN_GET_DOCTOR_NAME       | Function    | Returns doctor’s full name using DoctorID. |
+| SP_LOG_MISSED_DOSE       | Procedure   | Logs patient missed doses for auditing. |
+| SP_DOCTOR_SUMMARY_REPORT | Procedure   | Generates prescription summary handled by a doctor. |
+
+---
+
+## 📦 Package Specification
+
+```sql
+CREATE OR REPLACE PACKAGE PK_MEDICATION_MANAGER AS
+
+  -- Returns doctor full name
+  FUNCTION FN_GET_DOCTOR_NAME(p_doctor_id NUMBER) RETURN VARCHAR2;
+
+  -- Logs a missed dose
+  PROCEDURE SP_LOG_MISSED_DOSE(
+    p_patient_id NUMBER,
+    p_prescription_id NUMBER,
+    p_reason VARCHAR2
+  );
+
+  -- Doctor prescription summary report
+  PROCEDURE SP_DOCTOR_SUMMARY_REPORT(p_doctor_id NUMBER);
+
+END PK_MEDICATION_MANAGER;
+/
+
