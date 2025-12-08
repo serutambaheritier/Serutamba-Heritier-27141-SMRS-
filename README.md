@@ -249,4 +249,146 @@ CREATE OR REPLACE PACKAGE PK_MEDICATION_MANAGER AS
 
 END PK_MEDICATION_MANAGER;
 /
+## 📦 Package Body: PK_MEDICATION_MANAGER
+
+```sql
+CREATE OR REPLACE PACKAGE BODY PK_MEDICATION_MANAGER AS
+
+  --------------------------------------------------------------------
+  -- FUNCTION: FN_GET_DOCTOR_NAME
+  -- PURPOSE : Return the doctor's full name given their DoctorID
+  --------------------------------------------------------------------
+  FUNCTION FN_GET_DOCTOR_NAME(p_doctor_id NUMBER) RETURN VARCHAR2 IS
+    v_name VARCHAR2(200);
+  BEGIN
+    SELECT FullName INTO v_name
+    FROM Doctors
+    WHERE DoctorID = p_doctor_id;
+
+    RETURN v_name;
+
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+      RETURN 'Doctor Not Found';
+  END FN_GET_DOCTOR_NAME;
+
+
+
+  --------------------------------------------------------------------
+  -- PROCEDURE: SP_LOG_MISSED_DOSE
+  -- PURPOSE : Insert a missed dose record into logging table
+  --------------------------------------------------------------------
+  PROCEDURE SP_LOG_MISSED_DOSE(
+    p_patient_id NUMBER,
+    p_prescription_id NUMBER,
+    p_reason VARCHAR2
+  ) IS
+  BEGIN
+    INSERT INTO Missed_Doses (LogID, PatientID, PrescriptionID, Reason, LoggedAt)
+    VALUES (SEQ_LOG_ID.NEXTVAL, p_patient_id, p_prescription_id, p_reason, SYSDATE);
+
+    COMMIT;
+  END SP_LOG_MISSED_DOSE;
+
+
+
+  --------------------------------------------------------------------
+  -- PROCEDURE: SP_DOCTOR_SUMMARY_REPORT
+  -- PURPOSE : Display all prescriptions handled by a specific doctor
+  -- NOTE    : Uses explicit cursor and join across multiple tables
+  --------------------------------------------------------------------
+  PROCEDURE SP_DOCTOR_SUMMARY_REPORT(p_doctor_id NUMBER) IS
+
+    CURSOR c_summary IS
+      SELECT p.PrescriptionID,
+             pa.FullName AS PatientName,
+             m.MedicineName,
+             p.Dosage,
+             p.TimesPerDay
+      FROM Prescriptions p
+      JOIN Patients pa ON p.PatientID = pa.PatientID
+      JOIN Medicines m ON p.MedicineID = m.MedicineID
+      WHERE p.DoctorID = p_doctor_id;
+
+    v_row c_summary%ROWTYPE;
+
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('========= DOCTOR SUMMARY REPORT =========');
+    DBMS_OUTPUT.PUT_LINE('Doctor: ' || FN_GET_DOCTOR_NAME(p_doctor_id));
+    DBMS_OUTPUT.PUT_LINE('----------------------------------------');
+
+    OPEN c_summary;
+    LOOP
+      FETCH c_summary INTO v_row;
+      EXIT WHEN c_summary%NOTFOUND;
+
+      DBMS_OUTPUT.PUT_LINE('Prescription ID: ' || v_row.PrescriptionID);
+      DBMS_OUTPUT.PUT_LINE('Patient: ' || v_row.PatientName);
+      DBMS_OUTPUT.PUT_LINE('Medicine: ' || v_row.MedicineName);
+      DBMS_OUTPUT.PUT_LINE('Dosage: ' || v_row.Dosage);
+      DBMS_OUTPUT.PUT_LINE('Times/Day: ' || v_row.TimesPerDay);
+      DBMS_OUTPUT.PUT_LINE('----------------------------------------');
+    END LOOP;
+
+    CLOSE c_summary;
+  END SP_DOCTOR_SUMMARY_REPORT;
+
+END PK_MEDICATION_MANAGER;
+/
+
+```sql
+FUNCTION FN_GET_DOCTOR_NAME(p_doctor_id NUMBER) RETURN VARCHAR2 IS
+    v_name VARCHAR2(200);
+BEGIN
+    SELECT FullName INTO v_name
+    FROM Doctors
+    WHERE DoctorID = p_doctor_id;
+
+    RETURN v_name;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN 'Doctor Not Found';
+END FN_GET_DOCTOR_NAME;
+/
+
+
+PROCEDURE SP_DOCTOR_SUMMARY_REPORT(p_doctor_id NUMBER) IS
+
+    CURSOR c_summary IS
+      SELECT p.PrescriptionID,
+             pa.FullName AS PatientName,
+             m.MedicineName,
+             p.Dosage,
+             p.TimesPerDay
+      FROM Prescriptions p
+      JOIN Patients pa ON p.PatientID = pa.PatientID
+      JOIN Medicines m ON p.MedicineID = m.MedicineID
+      WHERE p.DoctorID = p_doctor_id;
+
+    v_row c_summary%ROWTYPE;
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('========= DOCTOR SUMMARY REPORT =========');
+    DBMS_OUTPUT.PUT_LINE('Doctor: ' || FN_GET_DOCTOR_NAME(p_doctor_id));
+    DBMS_OUTPUT.PUT_LINE('----------------------------------------');
+
+    OPEN c_summary;
+    LOOP
+        FETCH c_summary INTO v_row;
+        EXIT WHEN c_summary%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE('Prescription ID: ' || v_row.PrescriptionID);
+        DBMS_OUTPUT.PUT_LINE('Patient: ' || v_row.PatientName);
+        DBMS_OUTPUT.PUT_LINE('Medicine: ' || v_row.MedicineName);
+        DBMS_OUTPUT.PUT_LINE('Dosage: ' || v_row.Dosage);
+        DBMS_OUTPUT.PUT_LINE('Times/Day: ' || v_row.TimesPerDay);
+        DBMS_OUTPUT.PUT_LINE('----------------------------------------');
+    END LOOP;
+
+    CLOSE c_summary;
+END SP_DOCTOR_SUMMARY_REPORT;
+/
+
+
 
