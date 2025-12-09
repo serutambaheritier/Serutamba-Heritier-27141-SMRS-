@@ -392,3 +392,78 @@ END SP_DOCTOR_SUMMARY_REPORT;
 
 
 
+# 💊 Medication Compliance Dashboard
+
+This project visualizes medication adherence using two main charts:
+
+---
+
+## 📊 1. Medications Taken vs Skipped Per Patient (Bar Chart)
+
+This bar chart compares the number of medications **taken vs skipped** for five patients.
+
+### Key Insights
+- **Patient 4** has the highest skipped medications.
+- **Patient 2** shows the best adherence with low skipped doses.
+- **Patient 5** has the lowest medication volume overall.
+
+### Purpose
+Helps clinicians identify individual patients needing follow-up or counseling.
+
+---
+
+## 🥧 2. Compliance Percentage Per Department (Pie Chart)
+
+This pie chart displays department-level compliance percentages.
+
+### Department Compliance
+- **Cardiology — 82%**
+- **Pediatrics — 78%**
+- **Oncology — 74%**
+- **General Medicine — 62%**
+
+### Purpose
+Allows department managers and hospital executives to evaluate performance and improve medication adherence workflows.
+
+---
+
+## 🧾 Project Context
+
+### 🎯 Business Objective
+Improve medication adherence to reduce readmissions, complications, and treatment failure.
+
+### 🗂️ Data Source
+Data comes from an Electronic Health Record (EHR) or mobile health system that logs:
+- Patient medications
+- Taken vs skipped events
+- Department information
+
+### 👥 Users
+- Clinicians & Nurses
+- Department Managers
+- Hospital Executives / QA Teams
+
+### 🧠 Actionable Insights
+- Target non-adherent patients (ex: Patient 4)
+- Improve departmental workflows (ex: General Medicine)
+
+---
+
+## 🚀 How to Run
+1. Download or clone the repository.
+2. Open `index.html` in any browser.
+3. The dashboard will load automatically.
+
+Technologies used:
+- HTML
+- JavaScript
+- Chart.js
+
+---
+
+## 👨‍💻 Author
+Medication Compliance Dashboard — Healthcare Analytics Project
+
+
+
+
